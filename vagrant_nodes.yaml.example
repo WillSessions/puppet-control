@@ -1,0 +1,24 @@
+---
+- :hostname: ansible
+  :ip: 192.168.0.11
+  :ram: 512
+  :box: bento/centos-7.2
+  :puppet_facts:
+    :role: ansible
+
+- :hostname: jenkins
+  :ip: 192.168.0.12
+  :box: bento/centos-7.2
+  :puppet_facts:
+    :role: ci
+  :awscli_users:
+   - jenkins
+  :provision_scripts:
+   - name: 'epel.sh'
+   - name: 'credstash.sh'
+
+- :hostname: dnsproxy
+  :ip: 192.168.0.13
+  :box: bento/centos-7.2
+  :puppet_facts:
+    :role: dns_proxy

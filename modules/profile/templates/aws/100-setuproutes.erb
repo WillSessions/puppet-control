@@ -1,0 +1,10 @@
+#!/bin/sh
+# setup static routes for ENI
+
+if [ "$2" = "up" ]; then
+  /etc/sysconfig/network-scripts/ifup-routes $1
+fi
+
+if [ "$2" = "down" ]; then
+  /etc/sysconfig/network-scripts/ifdown-routes $1
+fi

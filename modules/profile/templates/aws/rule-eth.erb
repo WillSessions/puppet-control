@@ -1,0 +1,4 @@
+<%- eni_mac = @networking['interfaces']['eth'+@eni_device_index]['mac'] -%>
+<%- eni_ip = @ec2_metadata['network']['interfaces']['macs'][eni_mac]['local-ipv4s'] -%>
+from <%= eni_ip %> table <%= @role %>
+to <%= eni_ip %> table <%= @role %>

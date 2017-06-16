@@ -1,0 +1,5 @@
+<%- eni_mac = @networking['interfaces']['eth'+@eni_device_index]['mac'] -%>
+<%- eni_ip = @ec2_metadata['network']['interfaces']['macs'][eni_mac]['local-ipv4s'] -%>
+<%- eni_subnet_cidr = @ec2_metadata['network']['interfaces']['macs'][eni_mac]['subnet-ipv4-cidr-block'] -%>
+<%= eni_subnet_cidr %> dev eth<%= @eni_device_index %> proto kernel scope link src <%= eni_ip %> table <%= @role %>
+default via <%= eni_subnet_cidr.split('/')[0].split('.').map.with_index { |v, i| if i == 3; Integer(v)+1; else v; end }.join('.') %> dev eth<%= @eni_device_index %> table <%= @role %>

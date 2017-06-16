@@ -1,0 +1,10 @@
+/.vagrant
+/modules/*
+!/modules/customlib
+!/modules/role
+!/modules/profile
+/vagrant_nodes.yaml
+/Vagrantfile
+/data/env/vagrant.yaml
+/.aws
+/.ssh

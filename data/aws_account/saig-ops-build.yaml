@@ -1,0 +1,15 @@
+---
+# Please add key/value pairs in alphabetical order
+profile::bind::forwarder::zones:
+  apse2:
+    "ad-%{facts.aws_region.code}.build.aws.saig":
+    - 'type forward'
+    - 'forward only'
+
+profile::ntp::restrict:
+  apse2:
+  - 'restrict 10.9.0.0 mask 255.255.252.0 nomodify notrap'
+  - 'restrict 10.9.4.0 mask 255.255.252.0 nomodify notrap'
+  - 'restrict 10.9.8.0 mask 255.255.248.0 nomodify notrap'
+  - 'restrict 10.9.16.0 mask 255.255.252.0 nomodify notrap'
+  - 'restrict 10.9.20.0 mask 255.255.252.0 nomodify notrap'

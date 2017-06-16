@@ -1,0 +1,137 @@
+#!/usr/bin/ruby
+require 'yaml'
+
+# Set DNS Suffix
+domain = 'build.aws.saig'
+
+# Set Puppet configuration values
+puppet_env = 'vagrant'
+puppet_agent_version = '1.10.2'
+
+# Set Domain name
+dns_suffix = "#{puppet_env}.#{domain}"
+
+# Read vagrant host configuraton from file
+nodes = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), 'vagrant_nodes.yaml'))
+
+# Enable/Disable uploading AWS credentials
+aws_credentials = {
+  upload: true,
+  source: File.join(File.dirname(File.expand_path(__FILE__)), '.aws')
+}
+
+# Enable/Disable proxy settings
+proxy = {
+  enabled: false,
+  host: "proxy.#{dns_suffix}",
+  port: '8080'
+}
+
+puppet_global_facts = {
+  dns_suffix: dns_suffix,
+  proxy_enabled: proxy[:enabled],
+  proxy_host: proxy[:host],
+  proxy_port: proxy[:port],
+}
+
+Vagrant.configure("2") do |config|
+  nodes.each do |node|
+    config.vm.define node[:hostname] do |nodeconfig|
+      nodeconfig.vm.box = node[:box]
+      nodeconfig.vm.hostname = [node[:hostname], dns_suffix].join('-')
+      nodeconfig.vm.network :private_network, ip: node[:ip]
+      nodeconfig.vm.box_check_update = false
+
+      if not node[:forwarded_ports].nil?
+        node[:forwarded_ports].each do |port|
+          nodeconfig.vm.network "forwarded_port", guest: port[:guest], host: port[:host]
+        end
+      end
+
+      memory = node[:ram] ? node[:ram] : 1024;
+      nodeconfig.vm.provider :virtualbox do |vb|
+        vb.name = node[:hostname]
+        vb.cpus = node[:cpus] ? node[:cpus] : 4
+        vb.customize [
+          "modifyvm", :id,
+          "--cpuexecutioncap", "100",
+          "--memory", memory.to_s,
+        ]
+        vb.customize ["guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
+        if not node[:hdd].nil?
+          node[:hdd].each do |disk|
+            disk_path = File.join(Dir.home, 'VirtualBox VMs', node[:hostname], disk[:filename])
+            unless File.exist?(disk_path)
+              vb.customize ['createhd', '--format', 'VMDK', '--filename', disk_path, '--size', disk[:size] * 1024]
+            end
+            vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', disk[:port], '--device', 0, '--type', 'hdd', '--medium', disk_path]
+          end
+        end
+      end
+      
+      nodeconfig.ssh.pty = true
+
+      if not node[:hdd].nil?
+        nodeconfig.vm.provision "shell", inline: <<-SHELL
+          echo "# VBOX HARDDISK" > /etc/udev/rules.d/60-persistent-disk.rules
+        SHELL
+        node[:hdd].each do |disk|
+          nodeconfig.vm.provision "shell", inline: <<-SHELL
+            sudo echo 'KERNEL=="sd[b-x]", SUBSYSTEM=="block", SUBSYSTEMS=="scsi", ATTR{size}=="#{disk[:size]*2*1024*1024}", NAME="#{disk[:name]}"' >> /etc/udev/rules.d/60-persistent-disk.rules
+          SHELL
+        end
+        nodeconfig.vm.provision "shell", inline: "start_udev"
+      end
+
+      if aws_credentials[:upload]
+        nodeconfig.vm.provision "file", source: aws_credentials[:source], destination: "~"
+        nodeconfig.vm.provision "shell", inline: <<-SHELL
+          sudo cp -r /home/vagrant/.aws /root/
+        SHELL
+      end
+
+      nodeconfig.vm.provision "shell" do |s|
+        s.path = 'scripts/puppetagent.sh'
+        s.args = puppet_agent_version
+      end
+      if not node[:provision_scripts].nil?
+        node[:provision_scripts].each do |script|
+          nodeconfig.vm.provision "shell" do |s|
+            s.path = "scripts/#{script['name']}"
+            if script.has_key? 'args'
+              s.args = script['args']
+            end
+          end
+        end
+      end
+
+      nodeconfig.vm.synced_folder ".", "/vagrant", disabled: true
+      nodeconfig.vm.synced_folder ".", "/etc/puppetlabs/code/environments/#{puppet_env}"
+
+      nodeconfig.vm.provision :puppet do |puppet|
+        puppet.manifest_file = "site.pp"
+        puppet.manifests_path = "manifests"
+        puppet.environment_path = "environments"
+        puppet.environment = puppet_env
+        puppet.module_path = "modules"
+        puppet.options = "--ordering=manifest"
+        puppet.facter = puppet_global_facts.merge(node[:puppet_facts])
+        puppet.hiera_config_path = "hiera.yaml"
+        puppet.working_directory = "/etc/puppetlabs/code/environments/#{puppet_env}"
+      end
+
+      if aws_credentials[:upload]
+        if not node[:awscli_users].nil?
+          node[:awscli_users].each do |user|
+            nodeconfig.vm.provision "shell", inline: <<-SHELL
+              homedir=$(eval echo ~#{user})
+              sudo cp -r /home/vagrant/.aws ${homedir}/
+              sudo chown -R #{user}:#{user} ${homedir}/.aws
+            SHELL
+          end
+        end
+      end
+
+    end
+  end
+end

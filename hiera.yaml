@@ -1,0 +1,16 @@
+---
+version: 5
+
+defaults:
+  datadir: data
+  data_hash: yaml_data
+
+hierarchy:
+  - name: "Environment specific data"
+    path: "env/%{::environment}.yaml"
+
+  - name: "AWS account specific data"
+    path: "aws_account/%{facts.aws_account.name}.yaml"
+
+  - name: "Common data"
+    path: "common.yaml"

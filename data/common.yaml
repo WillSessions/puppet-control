@@ -1,0 +1,241 @@
+---
+# Please add key/value pairs in alphabetical order
+profile::ansible::pips:
+  ansible:
+    ensure: '2.2.0'
+  awscli:
+    before: 'Python::Pip[credstash]'
+  boto: {}
+  credstash: {}
+
+profile::base::cloudwatch_logs:
+  Messages:
+    path: '/var/log/messages'
+    log_group_name: '/ec2/linux/messages'
+  Secure:
+    path: '/var/log/secure'
+    log_group_name: '/ec2/linux/secure'
+  Audit:
+    path: '/var/log/audit/audit.log'
+    log_group_name: '/ec2/linux/audit'
+
+profile::base::pips:
+  awscli:
+    before: 'Python::Pip[credstash]'
+  boto: {}
+  credstash: {}
+
+profile::bind::forwarder::zones:
+  apse2:
+    '195.10.in-addr.arpa':
+    - 'type forward'
+    - 'forward only'
+    - 'forwarders { 10.195.25.49; 10.195.25.50; }'
+    '200.10.in-addr.arpa':
+    - 'type forward'
+    - 'forward only'
+    - 'forwarders { 10.195.25.49; 10.195.25.50; }'
+    '20.20.172.in-addr.arpa':
+    - 'type forward'
+    - 'forward only'
+    - 'forwarders { 10.195.25.49; 10.195.25.50; }'
+    '27.20.172.in-addr.arpa':
+    - 'type forward'
+    - 'forward only'
+    - 'forwarders { 10.195.25.49; 10.195.25.50; }'
+    'frd.global':
+    - 'type forward'
+    - 'forward only'
+    - 'forwarders { 10.195.25.49; 10.195.25.50; }'
+    'saig.frd.global':
+    - 'type forward'
+    - 'forward only'
+    - 'forwarders { 10.195.25.49; 10.195.25.50; }'
+  usea1:
+    '224-239.10.in-addr.arpa':
+    - 'type forward'
+    - 'forward only'
+    - 'forwarders { 10.225.12.199; 10.225.12.200; }'
+    'frd.global':
+    - 'type forward'
+    - 'forward only'
+    - 'forwarders { 10.225.12.199; 10.225.12.200; }'
+    'saig.frd.global':
+    - 'type forward'
+    - 'forward only'
+    - 'forwarders { 10.225.12.199; 10.225.12.200; }'
+
+profile::hardening::ssh_server_options:
+  Protocol: '2'
+  AddressFamily: 'inet'
+  LogLevel: 'INFO'
+  SyslogFacility: 'AUTHPRIV'
+  X11Forwarding: 'no'
+  MaxAuthTries: '4'
+  IgnoreRhosts: 'yes'
+  PermitRootLogin: 'no'
+  PermitEmptyPasswords: 'no'
+  PermitUserEnvironment: 'no'
+  Ciphers: 'aes128-ctr,aes192-ctr,aes256-ctr'
+  ClientAliveInterval: '300'
+  ClientAliveCountMax: '0'
+  LoginGraceTime: '60'
+  Banner: '/etc/issue.net'
+
+profile::hardening::sysctl:
+  net.ipv4.conf.all.send_redirects:
+    value: '0'
+  net.ipv4.conf.default.send_redirects:
+    value: '0'
+  net.ipv4.conf.all.accept_source_route:
+    value: '0'
+  net.ipv4.conf.default.accept_source_route:
+    value: '0'
+  net.ipv4.conf.all.accept_redirects:
+    value: '0'
+  net.ipv4.conf.default.accept_redirects:
+    value: '0'
+  net.ipv4.conf.all.log_martians:
+    value: '1'
+  net.ipv4.conf.default.log_martians:
+    value: '1'
+  net.ipv6.conf.all.accept_ra:
+    value: '0'
+  net.ipv6.conf.default.accept_ra:
+    value: '0'
+  net.ipv6.conf.all.accept_redirects:
+    value: '0'
+  net.ipv6.conf.default.accept_redirects:
+    value: '0'
+
+profile::jenkins::master::config_hash:
+  credentials.xml:
+    credentials:
+      SSHUserPrivateKey:
+        - scope: 'GLOBAL'
+          id: 'jenkins'
+          username: 'jenkins'
+      #UsernamePassword:
+      #  - scope: 'SYSTEM'
+      #    id: 'dinesh'
+      #    username: 'dinesh'
+      #    password: 'password123'
+  config.xml:
+    num_executors: '8'
+    # Security Realms. By default it uses no authentication
+    # Comment out below to use Jenkins own database
+    #security_realm:
+    #  'JenkinsUserDatabase':
+    #    disableSignup: 'true'
+    #    enableCaptcha: 'false'
+    # Comment out below to use Active directory integration
+    #security_realm:
+    #  'ActiveDirectory':
+    #    domain: 'paas.versent'
+    #    site: 'AU'
+    #    bindName: 'cn=example,dc=paas,dc=versent'
+    #    bindPassword: 'password'
+    #    server: 'ad.paas.versent:3268'
+    #    groupLookupStrategy: 'AUTO'
+    #    removeIrrelevantGroups: 'false'
+    # Authorization strategy. By default anyone can do anything
+    # Comment out below to restrict it only to logged in users
+    #authorization:
+    #  'FullControlOnceLoggedIn':
+    #    denyAnonymousReadAccess: 'true'
+    # Comment out below to use matrix based security
+    authorization:
+      'GlobalMatrix':
+        anonymous:
+          Computer:
+            - 'Build'
+            - 'Configure'
+            - 'Connect'
+            - 'Create'
+            - 'Delete'
+            - 'Disconnect'
+          CredentialsProvider:
+            - 'Create'
+            - 'Delete'
+            - 'ManageDomains'
+            - 'Update'
+            - 'View'
+          Hudson:
+            - 'Administer'
+            - 'ConfigureUpdateCenter'
+            - 'Read'
+            - 'RunScripts'
+            - 'UploadPlugins'
+          Item:
+            - 'Build'
+            - 'Cancel'
+            - 'Configure'
+            - 'Create'
+            - 'Delete'
+            - 'Discover'
+            - 'Move'
+            - 'Read'
+            - 'Workspace'
+          Run:
+            - 'Delete'
+            - 'Replay'
+            - 'Update'
+          View:
+            - 'Configure'
+            - 'Create'
+            - 'Delete'
+            - 'Read'
+
+profile::jenkins::master::pips:
+  awscli:
+    before: 'Python::Pip[credstash]'
+  boto: {}
+  credstash: {}
+
+profile::jenkins::master::ssh_host_keys:
+  gitlab.np.paas.versent.com.au:
+    key: 'AAAAB3NzaC1yc2EAAAADAQABAAABAQDVTNh6wOtVYBmcRgi4gwPJOg2RZKBmiJOaWzbdYO/UAmcnHANexpumMhm2BXlocyqnffyootXYgiIwwNnNWzy1FIzaeUT2VRVsf5HAIcnNTfXVfRtuaRf1l7GBV9HxMZx4lcqxHiCe8DRVHfDcTx4mO4AXATiL7On+nShKNZsBpx+Jifp5jYK+1Y2reIpl2+pUVXF7s5pnvK9d5ZGG6hDGdRLuiPz+y2ESQPF8EOareIKZVEf+UGwiFBTfbhml38rHrgYaJbCje6OEGhzGWSQwgpUBljtNv0omeDwArn/EvPQahZjueyhJjVMek7UMW894LKAOraAcpgSzb3FJE6Tb'
+
+profile::jenkins::master::ssh_private_key:
+  provider: 'credstash'
+  credential: 'jenkins.master.ssh.private.key'
+
+profile::jenkins::master::ssh_public_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCjUWLXU6vPxQ3Q1vpf/7CNdA+xYHjKww7i2S7LYffZ+Skou6+k1AHCCnAcvtp0eH6O88DUtRA1jTN8ykrVDTEHcNIfz3ub9xLUw9FHvixLDj4pI6Kw20tY8H+95Ivr7yctw9F07AJYkDQ0OErS6QPv7qUPfg7U0HR1kf4vfHYaT7ZI1d2xNjpSxorncmcSHEAGHlrbgV4g6YQdcgyrkNZJhPKGiux8O7N7JBp65WLnqkzY6DqC1zkllgAaQeLEPofXgG8O0Xg2xiLUfZriSWjQBD8CZ0+3RzTQ0U4O7ODUvYhi9fXnRVdqyWEJNULfPzpwmFeR8Xm/XYba/c1nCIUt'
+
+profile::puppet::agent::config_hash:
+  main:
+    environment: "%{::environment}"
+    hiera_config: "/etc/puppetlabs/code/environments/%{::environment}/hiera.yaml"
+
+profile::puppet::agent::external_facts:
+  dns_suffix: "%{facts.dns_suffix}"
+  eni_device_index: "%{facts.eni_device_index}"
+  managed_ad_ips: "%{facts.managed_ad_ips}"
+
+profile::telegraf::global_tags:
+  InstanceId: "%{facts.ec2_metadata.instance-id}"
+
+profile::telegraf::inputs:
+  cpu:
+    percpu: true
+    totalcpu: true
+    fielddrop:
+    - 'time_*'
+  disk:
+    ignore_fs:
+    - 'tmpfs'
+    - 'devtmpfs'
+  diskio: {}
+  kernel: {}
+  mem: {}
+  processes: {}
+  net:
+    drop:
+    - 'net_icmp'
+  swap: {}
+  system: {}
+
+profile::telegraf::outputs:
+  cloudwatch:
+    region: "%{facts.aws_region.name}"
+    namespace: 'AWS/EC2'

@@ -1,0 +1,42 @@
+mod 'apt',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-apt.git',
+  tag: '2.4.0'
+mod 'archive',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-archive.git'
+mod 'bind',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-bind.git'
+mod 'cloudwatchlogs',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-cloudwatchlogs.git'
+mod 'concat',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-concat.git',
+  tag: '2.2.1'
+mod 'customlib',
+  :local => true
+mod 'epel',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-epel.git'
+mod 'inifile',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-inifile.git'
+mod 'ntp',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-ntp.git'
+mod 'profile',
+  :local => true
+mod 'puppet',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-puppet.git'
+mod 'python',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-python.git'
+mod 'role',
+  :local => true
+mod 'ssh',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-ssh.git'
+mod 'ssm_agent',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-ssm_agent.git',
+  ref: 'saig'
+mod 'stdlib',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-stdlib.git'
+mod 'sysctl',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-sysctl.git'
+mod 'telegraf',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-telegraf.git',
+  ref: 'saig'
+mod 'wget',
+  git: 'ssh://git@source.saig.frd.global:7999/cpa/puppet-module-wget.git'

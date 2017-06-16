@@ -1,0 +1,110 @@
+---
+# Please add key/value pairs in alphabetical order
+profile::bind::forwarder::listen_addr:
+- 192.168.0.13
+
+profile::jenkins::master::ssl_ca_crt: |
+  -----BEGIN CERTIFICATE-----
+  MIIFvzCCA6egAwIBAgIJAMBs7pHgXXT7MA0GCSqGSIb3DQEBCwUAMHYxCzAJBgNV
+  BAYTAkFVMQwwCgYDVQQIDANOU1cxDzANBgNVBAcMBlN5ZG5leTEQMA4GA1UECgwH
+  VmVyc2VudDELMAkGA1UECwwCSVQxKTAnBgNVBAMMIGplbmtpbnMudmFncmFudC5t
+  Z3QucGFhcy52ZXJzZW50MB4XDTE2MTExMDA0MjA0NVoXDTI2MTEwODA0MjA0NVow
+  djELMAkGA1UEBhMCQVUxDDAKBgNVBAgMA05TVzEPMA0GA1UEBwwGU3lkbmV5MRAw
+  DgYDVQQKDAdWZXJzZW50MQswCQYDVQQLDAJJVDEpMCcGA1UEAwwgamVua2lucy52
+  YWdyYW50Lm1ndC5wYWFzLnZlcnNlbnQwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAw
+  ggIKAoICAQCkysX+lVAKMdW6SmEFU/pfIQJ2b0L4ScxNEt5kGYlKrizynHSUzUgY
+  JOypvM/3pNVQSsdFIgVaLCpLnamHrIoslkvWuWsE5GAx2CJCVWG3Tt1c5wMH8gyg
+  teT0PJsKNDcXAa0vkZmJSdAd02MAIXNTdrUcyd17kvEupQSr0Dz5bZyIwAiPlMRe
+  JV4S4lLOc3j1IKMk0zE6ZFkGSlfLzGHtQmIuSSetH9xlsy0/cGTPWpatukfrhNg2
+  VlDojxr43RLvZpQlGq2+SuWK3f/RqsQ5FzP+GO2b+FreoiPtu4+v0Iss9zppefMs
+  iiCX8sA+KkjbkVc0Q8BCpMBbgpLqXO7Q+d/2+LjjlHPc52ZAeCbmGWa1XDadVAR9
+  sIHKYvrz9frGo57eEPqylvmtETqxCH+PC3J6eLZxI4myp6HZffO250uIvO9HmAD6
+  q6xVU/wS/97RyfeqJAByHzWwfhfHoie1PjMMkjDBwylzTH0kDo2zisPsMgAw0Ls3
+  ng9grWejhdALUVGkw52b6I2gc7mK1NYDry2r7NF1N0GYU79patLnINm35dw8mqwt
+  JoEnNkRo8mDNEukHrnpNvVitEUHvmTiHNSAhYuhG+p5Ned/MR/aDfj5fGd2iLO4T
+  zrDEruzXn19WBfUSbPTF2P+yTTRLO26MhEqFSJSrRnnZ+kIcArS4pQIDAQABo1Aw
+  TjAdBgNVHQ4EFgQUt8C5uaE0dOcgq+MSn7j0V4ntQM0wHwYDVR0jBBgwFoAUt8C5
+  uaE0dOcgq+MSn7j0V4ntQM0wDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQsFAAOC
+  AgEAIm2dubEKfte1Lupfb04j9m7VzM24Xc9XGZFSY3hF70ANPtlLWsr2bwAjvjDL
+  oQhe5rq55b75DzuHBpIHerKkjAwEmmsbWUkCb85/vX0XYFlkqS4X2q/j42+glrde
+  7/O1R6sF911ZMgJAybL6eD+R5jmO5w70GaeptDiooHpgHZwteUoat7F60lSxHuP3
+  Qd/2W4kDS6jddEdg7g8JgILP8boKC7nIxhIQ2y4IekSx/AqnochAabJYaUXudv6C
+  fwdYR5HuH2Rm1SdcS/xhejF+fsgnX9ANjV+p1BlLQMYOEeWqR54M7OhV/xVReIXL
+  JE5wCT3Rx6YSgQSBGq4h3FMlNzxS+m5GnvSul3UTUAfeBIoQc3mHhuz7lTmhD0/R
+  bRGq+e3xFS6VNv7KpVlLfli96CdcgKx10tdxmvmiYAKWkUfc6GHGrNkbI0jeFTfv
+  TJY6CctE0d8dnJ93ze5uoaxxDokicn5wUB+ct5t0bwZUobJG9bm5g6CumQh5x+qH
+  LwTtpPFp2BHtTxs8qlAvqPYkrFqlo6Dj7xC3J42frXa9aUC4bq+uZ6mMc3GbdDzM
+  nVrBObqLjjKywtLbjWmo2mPElSjOV+cUrl3f/TGZVDKCxVoy+wxw3Xj7sLiZIXX/
+  NzAc/QCKA6ueGnQ9+3zdO9HaNxp374ISqEll0dL29df02ao=
+  -----END CERTIFICATE-----
+
+profile::jenkins::master::ssl_crt: "%{hiera('profile::jenkins::master::ssl_ca_crt')}"
+
+profile::jenkins::master::ssl_private_key: |
+  -----BEGIN PRIVATE KEY-----
+  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
+  WdFeCBDeVHbE3GwQl3gWaeUsmmlw4GU=
+  -----END PRIVATE KEY-----
+
+profile::jenkins::master::sysconfig_hash:
+  JENKINS_PORT: '-1'
+  JENKINS_HTTPS_PORT: '8443'
+  JENKINS_HTTPS_KEYSTORE_PASSWORD: 'password'
+
+profile::ntp::interfaces:
+- 192.168.0.13
+
+profile::ntp::restrict:
+- 'restrict 10.9.0.0 mask 255.255.252.0 nomodify notrap'
+- 'restrict 10.9.4.0 mask 255.255.252.0 nomodify notrap'
+- 'restrict 10.9.8.0 mask 255.255.248.0 nomodify notrap'
+- 'restrict 10.9.16.0 mask 255.255.252.0 nomodify notrap'
+- 'restrict 10.9.20.0 mask 255.255.252.0 nomodify notrap'
